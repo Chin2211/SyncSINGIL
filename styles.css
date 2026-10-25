@@ -1,326 +1,862 @@
+/* SyncSINGIL: a bank passbook. Ruled entry spread, stamped entries, index tabs on the fore-edge of the ledger. */
+
+:root {
+    --cover: #0d4d47;
+    --cover-deep: #093832;
+    --cover-ink: #e7f3ef;
+    --cover-soft: #a9d3c8;
+    --paper: #eef4f1;
+    --sheet: #f8fbfa;
+    --rule: #b8d3cc;
+    --rule-strong: #7fa9a0;
+    --ink: #14252b;
+    --ink-2: #46625f;
+    --ink-3: #4f6b67;
+    --hover: #dcebe6;
+    --stamp: #b02a23;
+    --stamp-soft: #f7dedb;
+    --paid: #17634a;
+    --paid-soft: #d5ede1;
+    --pending: #7d5200;
+    --pending-soft: #f6e8c6;
+    --focus: #0d4d47;
+    --radius: 4px;
+    --display: 'Big Shoulders Display', 'Arial Narrow', sans-serif;
+    --ui: 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+    --ledger: 'Azeret Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+    --ease-out: cubic-bezier(.16, 1, .3, 1);
+    color-scheme: light;
+}
+
 * {
     box-sizing: border-box
 }
 
-:root {
-    --red: #9f171d;
-    --red2: #c9252c;
-    --dark: #262b31;
-    --bg: #f3f5f8;
-    --line: #e0e4e9;
-    --text: #202631;
-    --muted: #697586;
-    --green: #d9f5e6;
-    --orange: #fff0d1
+html {
+    scrollbar-color: var(--rule-strong) var(--paper)
 }
 
 body {
     margin: 0;
-    font: 14px/1.45 Inter, Segoe UI, Arial, sans-serif;
-    color: var(--text);
-    background: var(--bg)
+    font: 16px/1.5 var(--ui);
+    color: var(--ink);
+    background: var(--paper);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility
+}
+
+::selection {
+    background: #a9d8cc;
+    color: var(--ink)
+}
+
+:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 3px
 }
 
 button,
 input,
 select {
-    font: inherit
+    font: inherit;
+    color: inherit
 }
 
-button {
-    cursor: pointer;
-    border: 0;
-    border-radius: 7px;
-    padding: 10px 13px;
-    background: var(--red);
-    color: white;
-    font-weight: 600
+h1,
+h2,
+h3 {
+    font-family: var(--display);
+    font-weight: 800;
+    line-height: .95;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: .005em;
+    text-wrap: balance
 }
 
-button.secondary {
-    background: #eef1f5;
-    color: #313b49;
-    border: 1px solid var(--line)
+p {
+    margin: 0
 }
 
-button.danger {
-    background: #b91c1c
+.muted {
+    color: var(--ink-2)
+}
+
+.small {
+    font-size: .85rem
+}
+
+/* Labels sit above figures and fields. They never sit above a heading. */
+label {
+    display: block;
+    font: 700 .78rem/1.2 var(--ui);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    margin: 14px 0 7px
+}
+
+.form-grid label {
+    min-height: 2.5em;
+    display: flex;
+    align-items: flex-end
+}
+
+.label {
+    display: block;
+    font: 700 .74rem/1.2 var(--ui);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-2)
 }
 
 input,
 select {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #d8dee6;
-    border-radius: 7px;
-    background: #fff;
-    color: var(--text)
+    padding: 12px 13px;
+    background-color: var(--sheet);
+    border: 1.5px solid var(--rule-strong);
+    border-radius: var(--radius);
+    transition: border-color .25s var(--ease-out), background-color .25s, box-shadow .25s
 }
 
-label {
-    display: block;
-    font-size: 12px;
+select {
+    appearance: none;
+    padding-right: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230d4d47' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px
+}
+
+input:hover,
+select:hover {
+    border-color: var(--ink-2)
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: var(--cover);
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(13, 77, 71, .18)
+}
+
+input[aria-invalid="true"] {
+    border-color: var(--stamp)
+}
+
+input::placeholder {
+    color: var(--ink-3);
+    opacity: 1
+}
+
+input[type="checkbox"] {
+    width: 46px;
+    height: 26px;
+    flex: none;
+    padding: 0;
+    appearance: none;
+    position: relative;
+    cursor: pointer;
+    background: var(--rule);
+    border: 0;
+    border-radius: 999px;
+    transition: background-color .35s var(--ease-out)
+}
+
+input[type="checkbox"]::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(20, 25, 27, .35);
+    transition: transform .5s var(--ease-out)
+}
+
+input[type="checkbox"]:checked {
+    background: var(--cover)
+}
+
+input[type="checkbox"]:checked::after {
+    transform: translateX(20px)
+}
+
+/* Buttons are cover-green press plates. Ghost buttons are outlined in ink. */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: var(--cover);
+    color: #fff;
+    border: 0;
+    border-radius: var(--radius);
+    padding: 13px 18px;
     font-weight: 700;
-    margin: 12px 0 5px
+    letter-spacing: .01em;
+    cursor: pointer;
+    box-shadow: 0 1px 0 var(--cover-deep), 0 12px 18px -14px rgba(20, 25, 27, .9);
+    transition: transform .3s var(--ease-out), background-color .3s, box-shadow .3s
 }
 
-.muted {
-    color: var(--muted)
+.btn:hover {
+    background: #106158;
+    transform: translateY(-2px);
+    box-shadow: 0 1px 0 var(--cover-deep), 0 18px 24px -16px rgba(20, 25, 27, .9)
 }
 
-.small {
-    font-size: 12px
+.btn:active {
+    transform: scale(.985);
+    box-shadow: 0 1px 0 var(--cover-deep)
 }
 
-.hidden {
-    display: none !important
+.btn:disabled {
+    background: #87a6a0;
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none
 }
 
-.login-wrap {
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    padding: 24px
-}
-
-.login-card {
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    box-shadow: 0 12px 40px #202b3d12;
-    max-width: 900px;
+.btn--block {
     width: 100%;
+    margin-top: 20px
+}
+
+.btn--ghost {
+    background: transparent;
+    color: var(--cover);
+    box-shadow: inset 0 0 0 1.5px var(--cover)
+}
+
+.btn--ghost:hover {
+    background: var(--hover);
+    box-shadow: inset 0 0 0 1.5px var(--cover)
+}
+
+.btn--sm {
+    padding: 7px 11px;
+    font-size: .86rem
+}
+
+.form-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    overflow: hidden
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 18px
 }
 
-.brand {
-    background: linear-gradient(145deg, #8c1018, #b91c24);
-    color: white;
-    padding: 42px;
+.form-actions {
     display: flex;
-    flex-direction: column;
-    justify-content: center
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px
 }
 
-.brand h1 {
-    margin: 0 0 8px;
-    font-size: 30px
+.form-error {
+    min-height: 1.5em;
+    margin-top: 14px;
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--stamp)
 }
 
-.login-form {
-    padding: 38px
-}
-
-.login-form h2 {
-    margin-top: 0
-}
-
-.tabs {
-    display: flex;
-    gap: 8px;
-    margin: 18px 0
-}
-
-.tabs button {
-    flex: 1
-}
-
-.tabs button.active {
-    background: var(--dark)
+.footer-note {
+    font-size: .9rem;
+    color: var(--ink-3);
+    margin-top: 16px
 }
 
 .demo-note {
-    background: #fff7e6;
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 12px;
-    margin-top: 18px
+    margin-top: 18px;
+    padding: 12px 14px;
+    font-size: .92rem;
+    border: 1px dashed var(--rule-strong);
+    border-radius: 3px;
+    background: var(--paper)
 }
 
-.shell {
+/* Entry: the passbook spread. Cover on the left, ruled page on the right. */
+.entry {
+    min-height: 100vh;
+    min-height: 100svh;
     display: grid;
-    grid-template-columns: 220px 1fr;
-    min-height: 100vh
+    place-items: center;
+    padding: clamp(14px, 3vw, 40px);
+    perspective: 1600px
 }
 
-.sidebar {
-    background: var(--dark);
-    color: white;
-    padding: 18px 12px;
+.spread {
+    position: relative;
+    width: min(1120px, 100%);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    background: var(--paper);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 50px 90px -50px rgba(20, 25, 27, .6)
+}
+
+.spread::after {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 50%;
+    width: 36px;
+    transform: translateX(-50%);
+    background: linear-gradient(to right, transparent, rgba(20, 25, 27, .16) 50%, transparent);
+    pointer-events: none
+}
+
+.spread__cover {
+    position: relative;
+    min-height: 640px;
     display: flex;
     flex-direction: column;
-    gap: 5px
+    justify-content: space-between;
+    gap: 48px;
+    padding: clamp(28px, 4.5vw, 60px);
+    background: var(--cover);
+    color: var(--cover-ink)
+}
+
+.spread__cover::before {
+    content: "";
+    position: absolute;
+    inset: 14px;
+    border: 1.5px solid rgba(231, 243, 239, .28);
+    border-radius: 3px;
+    pointer-events: none
+}
+
+.wordmark {
+    position: relative;
+    display: grid;
+    gap: 18px;
+    justify-items: start
+}
+
+.wordmark h1 {
+    font-size: clamp(3.6rem, 9vw, 6rem);
+    line-height: .85;
+    color: #fff
+}
+
+.mark {
+    width: 56px;
+    height: 56px;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8
+}
+
+.cover-copy {
+    position: relative;
+    display: grid;
+    gap: 14px;
+    max-width: 30ch
+}
+
+.cover-title {
+    font: 600 1.3rem/1.35 var(--ui)
+}
+
+.cover-tagline {
+    font: 700 .78rem/1.2 var(--ui);
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--cover-soft)
+}
+
+.spread__page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: clamp(26px, 4vw, 56px);
+    padding-left: clamp(54px, 6vw, 84px);
+    background: var(--paper)
+}
+
+.spread__page > * {
+    position: relative
+}
+
+/* The ruling is its own layer so the opening can draw it in from the top. */
+.rules {
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(to bottom, transparent 0 35px, var(--rule) 35px 36px);
+    pointer-events: none
+}
+
+.spread__page::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: clamp(40px, 4.4vw, 62px);
+    width: 1.5px;
+    background: #e6aaa4
+}
+
+.spread__page h2 {
+    font-size: clamp(2.4rem, 4.4vw, 3.4rem)
+}
+
+.lede {
+    color: var(--ink-2);
+    max-width: 46ch
+}
+
+/* Role tabs read as index tabs. The ink slides under the chosen one. */
+.index-tabs {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 8px;
+    border: 1.5px solid var(--cover);
+    border-radius: var(--radius);
+    background: var(--sheet);
+    overflow: hidden
+}
+
+.tab-ink {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 50%;
+    background: var(--cover);
+    transition: transform .6s var(--ease-out)
+}
+
+.index-tabs[data-active="1"] .tab-ink {
+    transform: translateX(100%)
+}
+
+.tab-btn {
+    position: relative;
+    z-index: 1;
+    padding: 12px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--cover);
+    font-weight: 700;
+    cursor: pointer;
+    transition: color .35s var(--ease-out)
+}
+
+.tab-btn[aria-selected="true"] {
+    color: #fff
+}
+
+.footer-note + .demo-note {
+    margin-top: 6px
+}
+
+/* Shell: the ledger leaf, with index tabs cut into its fore-edge. */
+.shell {
+    display: grid;
+    grid-template-columns: 236px minmax(0, 1fr);
+    min-height: 100vh;
+    min-height: 100svh
+}
+
+.index {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    align-self: start;
+    height: 100vh;
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+    padding: 26px 0 18px;
+    background: var(--paper);
+    border-right: 2px solid var(--ink)
 }
 
 .logo {
-    font-weight: 800;
-    font-size: 20px;
-    padding: 8px 10px 22px
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 22px 28px;
+    font: 800 1.9rem/1 var(--display);
+    text-transform: uppercase;
+    color: var(--ink)
 }
 
-.logo span {
-    color: #ffb3b6
+.logo .mark {
+    width: 30px;
+    height: 30px;
+    stroke-width: 2.2;
+    color: var(--cover)
 }
 
+.logo em {
+    font-style: normal;
+    color: var(--stamp)
+}
+
+.index__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px
+}
+
+/* Index tabs: square, stepped, and the active one reaches over the fore-edge into the leaf. */
 .nav {
-    background: transparent;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 13px 16px 13px 18px;
+    border: 1.5px solid var(--rule-strong);
+    border-right: 0;
+    border-radius: 0;
+    background: var(--sheet);
+    color: var(--ink-2);
+    font-weight: 700;
     text-align: left;
-    color: #dce1e7;
-    font-weight: 500;
-    border-radius: 7px;
-    padding: 11px 12px
+    cursor: pointer;
+    transition: transform .5s var(--ease-out), margin .5s var(--ease-out), background-color .3s, color .3s, border-color .3s
 }
 
-.nav:hover,
-.nav.active {
-    background: var(--red);
-    color: white
+.index__nav > .nav:nth-child(even) {
+    margin-left: 14px;
+    width: calc(100% - 14px)
 }
 
-.nav.logout {
-    margin-top: auto
+.nav:hover {
+    background: var(--hover);
+    color: var(--ink);
+    transform: translateX(-4px)
 }
 
-.main {
-    min-width: 0
+.nav[aria-current="page"] {
+    z-index: 2;
+    width: calc(100% + 22px);
+    padding-right: 38px;
+    background: var(--cover);
+    border-color: var(--cover);
+    color: #fff;
+    transform: none
+}
+
+.index__nav > .nav[aria-current="page"]:nth-child(even) {
+    width: calc(100% + 8px)
+}
+
+.index__foot {
+    margin-top: auto;
+    display: grid;
+    gap: 12px;
+    padding-top: 18px
+}
+
+.index__foot .label {
+    padding: 0 22px
+}
+
+/* On desktop the identity sits in the topbar; on phones it moves into the sticky strip. */
+.index__who {
+    display: none
+}
+
+.ico {
+    width: 20px;
+    height: 20px;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round
+}
+
+.leaf {
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+    overflow-x: clip;
+    perspective: 1600px;
+    background: var(--paper)
 }
 
 .topbar {
-    height: 64px;
-    background: white;
-    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    z-index: 2;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 26px
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 14px clamp(16px, 3vw, 40px);
+    background: var(--sheet);
+    border-bottom: 2px solid var(--ink)
+}
+
+.topbar__user {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    font-weight: 700
+}
+
+.topbar__user > span:nth-child(2) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
 }
 
 .content {
-    padding: 24px;
-    max-width: 1500px;
-    margin: auto
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: clamp(18px, 3vw, 40px) clamp(18px, 3vw, 40px) clamp(28px, 4vw, 56px);
+    outline: none
 }
 
 .page-head {
     display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
     justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 18px
+    gap: 18px 28px;
+    margin-bottom: 26px
 }
 
 .page-head h1 {
-    font-size: 24px;
+    font-size: clamp(2.6rem, 5.4vw, 4.4rem)
+}
+
+.page-head .lede {
+    margin-top: 10px
+}
+
+/* Balance carried forward: the dominant line of the dashboard. */
+.carry {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    background: var(--sheet);
+    border-top: 2px solid var(--ink);
+    border-bottom: 1px solid var(--rule-strong)
+}
+
+.carry__main {
+    padding: 26px 28px 26px 0;
+    border-right: 1px solid var(--rule-strong)
+}
+
+.carry__figure {
+    margin: 10px 0 8px;
+    font: 800 clamp(3.5rem, 9vw, 6rem)/.9 var(--display);
+    font-variant-numeric: tabular-nums;
+    color: var(--cover)
+}
+
+.carry__side {
+    display: grid;
     margin: 0
 }
 
-.cards {
+.carry__side div {
+    padding: 14px 0 14px 24px;
+    border-bottom: 1px solid var(--rule)
+}
+
+.carry__side div:last-child {
+    border-bottom: 0
+}
+
+.carry__side dt {
+    font: 700 .74rem/1.2 var(--ui);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-2)
+}
+
+.carry__side dd {
+    margin: 4px 0 0;
+    font: 600 1.35rem/1.2 var(--ledger);
+    font-variant-numeric: tabular-nums
+}
+
+.carry__side small {
+    color: var(--ink-3)
+}
+
+/* Summary strip for totals: ruled columns, not separate cards. */
+.strip {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 14px;
-    margin-bottom: 18px
+    margin-bottom: 24px;
+    background: var(--sheet);
+    border-top: 2px solid var(--ink);
+    border-bottom: 1px solid var(--rule-strong)
 }
 
-.card,
+.strip > div {
+    padding: 18px 20px;
+    border-right: 1px solid var(--rule)
+}
+
+.strip > div:last-child {
+    border-right: 0
+}
+
+.strip b {
+    display: block;
+    margin-top: 8px;
+    font: 600 1.45rem/1.2 var(--ledger);
+    font-variant-numeric: tabular-nums
+}
+
+.strip small {
+    color: var(--ink-3)
+}
+
+/* Sections are ruled, not boxed: a double rule over each heading, no border, radius or shadow. */
 .panel {
-    background: white;
-    border: 1px solid var(--line);
-    border-radius: 11px;
-    padding: 17px;
-    box-shadow: 0 2px 5px #202b3d05
+    padding: 18px 0 0;
+    border-top: 3px double var(--ink)
 }
 
-.metric {
-    font-size: 24px;
-    font-weight: 800;
-    margin: 8px 0
+.panel > h3 {
+    margin-bottom: 14px;
+    font-size: 1.65rem
 }
 
-.metric-label {
-    font-size: 12px;
-    color: var(--muted)
+.panel > .btn {
+    margin-top: 18px
 }
 
 .grid2 {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 40px;
+    margin-top: 28px
 }
 
-.panel h3 {
-    margin: 0 0 14px;
-    font-size: 16px
+.stack-gap {
+    margin-top: 28px
+}
+
+.ledger-lines {
+    list-style: none;
+    margin: 0 0 18px;
+    padding: 0
+}
+
+.ledger-lines li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule)
+}
+
+.ledger-lines li:last-child {
+    border-bottom: 0
+}
+
+.ledger-lines b {
+    font: 600 .92rem var(--ledger)
+}
+
+.ledger-lines span {
+    color: var(--ink-2);
+    font-size: .92rem
+}
+
+.ledger-lines .num {
+    color: var(--ink);
+    font-weight: 600
 }
 
 .toolbar {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     gap: 10px;
-    margin-bottom: 14px;
-    flex-wrap: wrap
+    margin-bottom: 18px
 }
 
 .toolbar input {
-    max-width: 320px
+    max-width: 340px
 }
 
 .toolbar select {
-    max-width: 190px
+    max-width: 200px
+}
+
+.toolbar label {
+    margin: 0 6px 0 0;
+    font-size: .95rem;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ink)
+}
+
+/* Tables are ledgers: a double rule over the column heads, a hairline under each entry. */
+.table-wrap {
+    overflow-x: auto
 }
 
 table {
-    border-collapse: collapse;
     width: 100%;
-    font-size: 13px
-}
-
-th,
-td {
-    text-align: left;
-    padding: 12px 10px;
-    border-bottom: 1px solid var(--line);
-    white-space: nowrap
+    border-collapse: collapse
 }
 
 th {
-    color: #5e6878;
-    font-size: 11px;
+    padding: 12px;
+    text-align: left;
+    white-space: nowrap;
+    font: 700 .72rem/1.2 var(--ui);
+    letter-spacing: .12em;
     text-transform: uppercase;
-    letter-spacing: .04em;
-    background: #fafbfc
+    color: var(--ink-2);
+    background: var(--sheet);
+    border-bottom: 2px solid var(--ink)
 }
 
-tr:last-child td {
-    border-bottom: 0
+td {
+    padding: 13px 12px;
+    white-space: nowrap;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--rule);
+    transition: background-color .25s
 }
 
-.table-wrap {
-    overflow: auto
+tbody tr:hover td {
+    background: var(--hover)
 }
 
-.badge {
-    display: inline-block;
-    border-radius: 20px;
-    padding: 4px 8px;
-    font-size: 11px;
-    font-weight: 700;
-    background: #e8edf4
+tbody tr:last-child td {
+    border-bottom-color: var(--rule-strong)
 }
 
-.badge.green {
-    background: var(--green);
-    color: #167247
+.id {
+    font-family: var(--ledger);
+    font-size: .86rem
 }
 
-.badge.orange {
-    background: var(--orange);
-    color: #925c00
+.num {
+    font-family: var(--ledger);
+    font-size: .9rem;
+    font-variant-numeric: tabular-nums
 }
 
-.badge.red {
-    background: #ffe1e1;
-    color: #a31515
+.empty {
+    padding: 26px;
+    text-align: center;
+    white-space: normal;
+    color: var(--ink-3)
 }
 
 .actions {
@@ -328,249 +864,570 @@ tr:last-child td {
     gap: 6px
 }
 
-.actions button {
-    padding: 6px 8px;
-    font-size: 11px
+/* Status pills for routine states. */
+.stamp {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    border: 1.5px solid currentColor;
+    border-radius: 3px;
+    font: 700 .72rem/1 var(--ui);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    white-space: nowrap
 }
 
-.form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0 14px
+.stamp--paid {
+    color: var(--paid);
+    background: var(--paid-soft)
 }
 
-.form-actions {
+.stamp--pending {
+    color: var(--pending);
+    background: var(--pending-soft)
+}
+
+.stamp--inactive {
+    color: var(--stamp);
+    background: var(--stamp-soft)
+}
+
+.stamp--ink {
+    color: var(--cover);
+    background: transparent
+}
+
+/* Impressions: the teller's ink. Small chips are solid so they stay legible. The hero
+   impression on a receipt is the one textured mark: roughened edge, thinning ink, multiplied onto the paper. */
+.impression {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border: 2px solid currentColor;
+    border-radius: 3px;
+    color: var(--stamp);
+    background: var(--stamp-soft);
+    font: 800 .78rem/1 var(--ui);
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    white-space: nowrap
+}
+
+.impression--paid {
+    color: var(--cover);
+    background: var(--paid-soft)
+}
+
+.impression--hero {
+    padding: 10px 20px;
+    font-size: clamp(1.6rem, 4.6vw, 2.3rem);
+    letter-spacing: .1em;
+    background: transparent;
+    mix-blend-mode: multiply;
+    filter: url(#ink-edge);
+    transform: rotate(-6deg)
+}
+
+.stamp-field {
     display: flex;
-    gap: 8px;
-    margin-top: 18px
+    justify-content: center;
+    padding: 18px 0 34px
 }
 
 .notice {
-    padding: 12px 14px;
-    border-radius: 8px;
-    background: #f1f5f9;
-    margin: 10px 0
+    margin: 16px 0;
+    padding: 14px 16px;
+    font-size: .95rem;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius)
 }
 
 .notice.success {
-    background: #e3f8ed;
-    color: #16653f
+    color: #0f4d37;
+    background: var(--paid-soft);
+    border-color: #b8dccb
 }
 
 .notice.warn {
-    background: #fff3d8;
-    color: #815300
+    color: #5e3d00;
+    background: var(--pending-soft);
+    border-color: #e8d29c
+}
+
+.bars {
+    display: grid;
+    gap: 14px;
+    margin: 6px 0 4px
 }
 
 .bar-row {
     display: grid;
-    grid-template-columns: 80px 1fr 85px;
+    grid-template-columns: 52px minmax(0, 1fr) auto;
     align-items: center;
-    gap: 10px;
-    margin: 12px 0;
-    font-size: 12px
+    gap: 14px;
+    font-size: .92rem
+}
+
+.bar-row b {
+    font: 600 .9rem var(--ledger);
+    white-space: nowrap
 }
 
 .bar {
-    height: 10px;
-    border-radius: 10px;
-    background: #edf0f4;
-    overflow: hidden
+    height: 14px;
+    overflow: hidden;
+    background: var(--paper);
+    border: 1px solid var(--rule-strong)
 }
 
-.bar i {
+.bar > i {
     display: block;
     height: 100%;
-    background: var(--red);
-    border-radius: 10px
+    background: var(--cover);
+    transform-origin: left center
 }
 
-.ring {
-    width: 110px;
-    height: 110px;
-    border-radius: 50%;
-    background: conic-gradient(var(--red) 0 72%, #f2c4c6 72% 90%, #e8edf4 90%);
-    display: grid;
-    place-items: center
+.bar--wide {
+    height: 18px;
+    margin: 10px 0 18px
 }
 
-.ring:after {
-    content: '72%';
-    width: 76px;
-    height: 76px;
-    background: white;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    font-weight: 800;
-    font-size: 20px
+.stack {
+    display: flex;
+    height: 18px;
+    margin: 16px 0 12px;
+    overflow: hidden;
+    background: var(--paper);
+    border: 1.5px solid var(--ink)
+}
+
+.seg {
+    display: block;
+    height: 100%;
+    flex: 0 1 0;
+    transform-origin: left center
+}
+
+.seg--active {
+    background: var(--cover)
+}
+
+.seg--overdue {
+    background: var(--stamp)
+}
+
+.seg--paid {
+    background: var(--paid)
+}
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none
+}
+
+.legend li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--ledger)
+}
+
+.rate {
+    margin: 6px 0 12px;
+    font: 800 clamp(3rem, 7vw, 5rem)/.9 var(--display);
+    font-variant-numeric: tabular-nums;
+    color: var(--cover)
+}
+
+/* Tabs in profile settings: an underline that draws in under the chosen one. */
+.tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--rule-strong)
+}
+
+.tab {
+    position: relative;
+    padding: 10px 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--ink-2);
+    font-weight: 700;
+    cursor: pointer
+}
+
+.tab::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 3px;
+    background: var(--cover);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform .6s var(--ease-out)
+}
+
+.tab.active {
+    color: var(--cover)
+}
+
+.tab.active::after {
+    transform: scaleX(1)
 }
 
 .switchrow {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid var(--line);
+    gap: 14px;
     padding: 14px 0;
-    gap: 12px
+    border-bottom: 1px dashed var(--rule-strong)
 }
 
-.switchrow input {
-    width: auto
+.switchrow .small {
+    margin-top: 2px
 }
 
-.empty {
-    padding: 30px;
-    text-align: center;
-    color: var(--muted)
+/* Payment: stamp pads for the method, and a live balance under the amount. */
+.pay-form {
+    display: grid;
+    max-width: 620px
 }
 
-.footer-note {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 16px
+.preview {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 14px;
+    padding-top: 12px;
+    color: var(--ink-2);
+    border-top: 1px dashed var(--rule-strong)
+}
+
+.preview b {
+    font: 600 1.2rem var(--ledger);
+    color: var(--cover)
+}
+
+.methods {
+    min-width: 0;
+    margin: 18px 0 0;
+    padding: 0;
+    border: 0
+}
+
+.methods legend {
+    margin-bottom: 8px;
+    padding: 0;
+    font: 700 .78rem/1.2 var(--ui);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-2)
+}
+
+.pay-methods {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px
+}
+
+.chip {
+    padding: 13px 10px;
+    border: 1.5px solid var(--rule-strong);
+    border-radius: var(--radius);
+    background: var(--sheet);
+    color: var(--ink);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color .3s, color .3s, border-color .3s, transform .4s var(--ease-out)
+}
+
+.chip:hover {
+    border-color: var(--cover);
+    transform: translateY(-2px)
+}
+
+.chip[aria-pressed="true"] {
+    background: var(--cover);
+    border-color: var(--cover);
+    color: #fff
+}
+
+/* Slip: the confirmation of a payment, set on the page rather than in a modal. */
+.slip {
+    margin-bottom: 26px
+}
+
+.facts {
+    display: grid;
+    gap: 10px;
+    margin: 16px 0
+}
+
+.facts div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--rule-strong)
+}
+
+.facts dt {
+    color: var(--ink-2)
+}
+
+.facts dd {
+    margin: 0;
+    font: 600 .95rem var(--ledger);
+    text-align: right
 }
 
 .modal-backdrop {
     position: fixed;
     inset: 0;
-    background: #10182080;
+    z-index: 20;
     display: grid;
     place-items: center;
     padding: 18px;
-    z-index: 10
+    background: rgba(9, 56, 50, .55)
 }
 
 .modal {
-    background: white;
-    border-radius: 12px;
-    padding: 22px;
-    max-width: 540px;
     width: 100%;
+    max-width: 560px;
     max-height: 90vh;
-    overflow: auto
+    padding: clamp(20px, 3vw, 30px);
+    overflow: auto;
+    background: var(--sheet);
+    border-top: 6px solid var(--cover);
+    box-shadow: 0 40px 80px -30px rgba(20, 25, 27, .6)
 }
 
 .modal h2 {
-    margin-top: 0
+    margin-bottom: 12px;
+    font-size: 2.2rem
+}
+
+.modal h3 {
+    margin: 18px 0 10px;
+    font-size: 1.4rem
+}
+
+.modal p {
+    margin: 10px 0
 }
 
 .toast {
     position: fixed;
-    bottom: 20px;
     right: 20px;
-    background: #202832;
-    color: white;
-    padding: 12px 16px;
-    border-radius: 9px;
-    z-index: 20;
-    box-shadow: 0 8px 30px #0003
+    bottom: 20px;
+    z-index: 30;
+    max-width: min(380px, calc(100vw - 40px));
+    padding: 13px 18px;
+    border-radius: 3px;
+    background: var(--ink);
+    color: var(--paper);
+    font-weight: 600;
+    box-shadow: 0 18px 40px -18px rgba(20, 37, 43, .7)
 }
 
-.profile-avatar {
-    width: 54px;
-    height: 54px;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    background: #f8e2e3;
-    color: var(--red);
-    font-size: 22px;
-    font-weight: 800
-}
-
-.pay-methods {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px
-}
-
-.pay-methods button {
-    background: #f0f2f5;
-    color: #28313b;
-    border: 1px solid var(--line)
-}
-
-.pay-methods button.chosen {
-    background: #ffe6e7;
-    border-color: var(--red);
-    color: var(--red)
-}
-
-@media(max-width:950px) {
-    .cards {
-        grid-template-columns: repeat(2, minmax(0, 1fr))
-    }
-
+/* Narrow layouts: the index becomes a strip of tabs above the leaf. */
+@media (max-width: 1040px) {
     .shell {
-        grid-template-columns: 180px 1fr
+        grid-template-columns: minmax(0, 1fr)
     }
 
-    .grid2 {
-        grid-template-columns: 1fr
-    }
-}
-
-@media(max-width:650px) {
-    .login-card {
-        grid-template-columns: 1fr
-    }
-
-    .brand {
-        padding: 25px
-    }
-
-    .login-form {
-        padding: 25px
-    }
-
-    .shell {
-        grid-template-columns: 1fr
-    }
-
-    .sidebar {
-        position: static;
-        display: flex;
+    .index {
+        position: sticky;
+        top: 0;
+        z-index: 10;
         flex-direction: row;
-        overflow: auto;
-        padding: 8px
+        flex-wrap: wrap;
+        align-items: center;
+        row-gap: 8px;
+        height: auto;
+        padding: 10px 12px;
+        border-right: 0;
+        border-bottom: 2px solid var(--ink)
     }
 
     .logo {
-        display: none
+        order: 1;
+        flex: none;
+        padding: 0 8px 0 2px;
+        font-size: 1.3rem
+    }
+
+    .index__nav {
+        order: 3;
+        flex: 1 0 100%;
+        min-width: 0;
+        flex-direction: row;
+        gap: 6px;
+        overflow-x: auto;
+        -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
+        mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent)
+    }
+
+    .index__nav > .nav:nth-child(even),
+    .index__nav > .nav[aria-current="page"]:nth-child(even) {
+        margin-left: 0;
+        width: auto
     }
 
     .nav {
-        white-space: nowrap;
-        padding: 9px
+        flex: none;
+        width: auto;
+        padding: 9px 14px;
+        white-space: nowrap
     }
 
-    .nav.logout {
-        margin: 0
+    .nav:hover,
+    .nav[aria-current="page"] {
+        transform: none;
+        width: auto;
+        padding-right: 14px
+    }
+
+    .index__foot {
+        order: 2;
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 0 auto;
+        padding: 0
+    }
+
+    .index__foot .label {
+        display: none
+    }
+
+    .index__who {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0
+    }
+
+    .index__name {
+        max-width: 8rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-weight: 700;
+        font-size: .95rem
+    }
+
+    /* The identity lives in the sticky strip on phones; a topbar would sit under it. */
+    .topbar {
+        display: none
+    }
+
+    .strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+
+    .strip > div:nth-child(2) {
+        border-right: 0
+    }
+
+    .strip > div:nth-child(-n+2) {
+        border-bottom: 1px solid var(--rule)
+    }
+
+    .grid2 {
+        grid-template-columns: minmax(0, 1fr)
+    }
+}
+
+@media (max-width: 480px) {
+    .nav__text {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap
+    }
+
+    .index__who .stamp {
+        display: none
+    }
+}
+
+@media (max-width: 760px) {
+    .spread {
+        grid-template-columns: minmax(0, 1fr)
+    }
+
+    .spread::after {
+        display: none
+    }
+
+    .spread__cover {
+        min-height: 0;
+        gap: 26px
+    }
+
+    .carry {
+        grid-template-columns: minmax(0, 1fr)
+    }
+
+    .carry__main {
+        padding-right: 0;
+        border-right: 0;
+        border-bottom: 1px solid var(--rule-strong)
+    }
+
+    .carry__side div {
+        padding-left: 0
+    }
+
+    .ledger-lines li {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 4px
+    }
+
+    .form-grid,
+    .pay-methods {
+        grid-template-columns: minmax(0, 1fr)
+    }
+
+    .form-grid label {
+        min-height: 0
     }
 
     .content {
-        padding: 14px
+        padding: 16px
     }
 
-    .topbar {
-        padding: 0 14px
+    .spread__page {
+        padding-left: 26px
     }
 
-    .cards {
-        grid-template-columns: 1fr 1fr
+    .spread__page::before {
+        display: none
     }
+}
 
-    .form-grid {
-        grid-template-columns: 1fr
-    }
-
-    .page-head {
-        align-items: flex-start;
-        flex-direction: column
-    }
-
-    .metric {
-        font-size: 20px
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important
     }
 }
